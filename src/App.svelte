@@ -1,67 +1,63 @@
 <!-- untuk menampung code javascript -->
 <script>
-    import EmojiDisplay from './components/EmojiDisplay.svelte'
-    import EmojiDescription from './components/EmojiDescription.svelte'
+  import EmojiDisplay from "./components/EmojiDisplay.svelte";
+  import EmojiDescription from "./components/EmojiDescription.svelte";
+  import Button from "./components/Button.svelte";
+  import {fade, fly} from "svelte/transition";
 
+  let isLoaded = false;
+  let currentEmoji = "😁";
+  const emojis = ["🤣", "🙈", "👻", "🚀"];
+  let m = { x: 0, y: 0 };
 
+  function randomizeEmoji() {
+    return emojis[Math.floor(Math.random() * emojis.length)];
+  }
 
-    let isLoaded = false;
-    let currentEmoji = '😁';
-    const emojis = ['🤣', '🙈' , '👻', '🚀']
+  function handleRandomButton() {
+    currentEmoji = randomizeEmoji();
+  }
 
-    function randomizeEmoji() {
-        return emojis[Math.floor(Math.random() * emojis.length)]
-    }
+  // function loading
+  setTimeout(function () {
+    isLoaded = true;
+  }, 2000);
 
-    function handleRandomButton () {
-        currentEmoji = randomizeEmoji()
-    }
-
-    // function loading
-    setTimeout(function () {
-        isLoaded = true;
-    }, 2000);
+  function handleMouseMove(event) {
+    m.x = event.clientX;
+    m.y = event.clientY;
+  }
 </script>
-
 
 <!-- Membuat css -->
 <style>
-    button {
-        background-color: #8bd3dd;
-        padding: 0.75em;
-        border-radius: 0.25em;
-        border: 2px solid #000;
-        box-shadow: 0.4rem 0.4rem 0 #222;
-    }
-
-    button:hover {
-        box-shadow: 0.25rem 0.25rem 0 #222;
-        transition: all 0.4s ease 0s;
-        background-color:#8bd;
-    }
-
-
-    div {
-        margin: 2em;
-    }
-
-
+  div {
+    margin: 2em;
+  }
 </style>
 
-<!-- html -->
-<div>
-    <h1>Randomize Emoji</h1>
-    <ul>
-        {#each emojis as emoji}
-        <li>{emoji}</li>
-        {/each}
+<svelte:head>
+  <link rel="stylesheet" href="terminal.min.css" />
+</svelte:head>
 
-    </ul>
-    {#if isLoaded === true}
-    <EmojiDisplay {currentEmoji}/>
-    <EmojiDescription />
-    <button on:click={handleRandomButton}>🔄 Randomize</button>
-   {:else}
-   <h2>Please Wait...</h2>
-   {/if}
+<!-- html -->
+<div class="container" on:mousemove={handleMouseMove}>
+  <p>The mouse position: {m.x} x {m.y}</p>
+  <h1>Randomize Emoji</h1>
+  <ul>
+    {#each emojis as emoji}
+      <li>{emoji}</li>
+    {/each}
+  </ul>
+  {#if isLoaded === true}
+    <div in:fly={{ y: 200, duration: 2000}} out:fade>
+      <EmojiDisplay {currentEmoji} />
+      <EmojiDescription />
+      <Button on:click={handleRandomButton} title={'🔄 Randomize'} />
+    </div>
+  {:else}
+    <h2>Please Wait...</h2>
+  {/if}
+
+  <Button title={'Toggle'} on:click={() => (isLoaded = !isLoaded)} />
 </div>
